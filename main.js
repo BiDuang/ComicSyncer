@@ -13,6 +13,8 @@
 // @match        https://jmcomic1.onl/*
 // @match        https://jmcomic.onl/*
 
+// @connect      localhost
+
 // @grant        GM_openInTab
 // @grant        GM_xmlhttpRequest
 // ==/UserScript==
@@ -20,7 +22,6 @@
 (function () {
     'use strict';
 
-    const REMOTE_SERVER_URL = "";
 
     function sleep(delay) {
         var start = (new Date()).getTime();
@@ -95,16 +96,34 @@
         }
         console.log(comic_info);
 
-        /* try {
-            let resp = GM_xmlhttpRequest({
-                method: "POST",
+        const REMOTE_SERVER_URL = "https://comic.friendship.org.cn/share";
+        let resp;
+        try {
+            resp = GM_xmlhttpRequest({
+                method: "post",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Accept": "*/*"
+                },
                 url: REMOTE_SERVER_URL,
-                data: comic_info
+                data: JSON.stringify(comic_info),
+                onload: function (res) {
+                    if (res.status === 200) {
+                        console.log('请求成功')
+                        alert(JSON.parse(res.response).data.msg);
+                    } else {
+                        console.log('请求失败')
+                        console.log(res)
+                    }
+                },
+                onerror: function (err) {
+                    console.log('请求错误')
+                    console.log(err)
+                }
             })
         } catch (error) {
             alert(error);
-        } */
-
+        }
 
     }
 
